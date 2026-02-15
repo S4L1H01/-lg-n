@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ülgün: Kabile Sırları</title>
+    <style>
+        :root { --bg: #1a1a1a; --kabile: #1a3c1a; --text: #f0e68c; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; background: var(--bg); color: var(--text); }
+        
+        /* 1. GİRİŞ EKRANI (image_d6a521.png) */
+        #giris-ekrani { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 20px; }
+        .box { width: 300px; padding: 20px; border: 3px solid; text-align: center; cursor: pointer; background: rgba(255,255,255,0.05); }
+        .box-isim { border-color: purple; } .box-katil { border-color: darkred; } .box-kur { border-color: blue; }
+        input { background: transparent; border: 1px solid #555; color: white; padding: 10px; width: 80%; }
+
+        /* 2. LOBİ EKRANI (image_d69642.png) */
+        #lobi-ekrani { display: none; grid-template-columns: 2fr 1fr; grid-template-rows: 2fr 1fr 1fr; height: 100vh; }
+        .bolge { border: 1px solid #444; padding: 10px; position: relative; overflow: hidden; }
+        #gri-bolge { background: #222; } /* Karakter gezdirme alanı */
+        #yesil-bolge { grid-row: span 2; background: #1a2e1a; } /* Roller */
+        #mor-bolge { background: #2e1a2e; } /* Nick/Baloncuk ayarı */
+        #lacivert-bolge { background: #1a1a2e; } /* Süre/Sayı ayarları */
+        #acik-mavi-bolge { background: #1a2e2e; display: flex; gap: 10px; align-items: center; }
+
+        /* 3. OBA/OYUN ALANI (image_d62239.png) */
+        #oyun-ekrani { display: none; background: #2d5a27; height: 100vh; position: relative; }
+        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; z-index: 5; }
+        .cadir { position: absolute; width: 80px; text-align: center; }
+        .oyuncu { width: 30px; height: 30px; background: gray; border-radius: 50%; margin: 0 auto; position: relative; transition: all 3.3s linear; }
+        .baloncuk { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); background: white; color: black; font-size: 10px; padding: 2px; border-radius: 3px; font-weight: bold; }
+        .oy-sayisi { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); width: 15px; height: 15px; background: black; border-radius: 50%; border: 1px solid white; display: none; }
+
+        .gece { filter: brightness(0.3) contrast(1.2); }
+        .gece .baloncuk, .gece .nick-label { display: none !important; }
+        
+        button { padding: 10px; cursor: pointer; background: #444; color: white; border: none; }
+        button:hover { background: #666; }
+    </style>
+</head>
+<body>
+
+    <div id="giris-ekrani">
+        <div class="box box-isim"><input type="text" id="p-isim" placeholder="İSİM YAZINIZ"></div>
+        <div class="box box-katil" onclick="kodlaKatil()">KOD İLE KATIL</div>
+        <div class="box box-kur" onclick="lobiKur()">LOBİ KUR</div>
+    </div>
+
+    <div id="lobi-ekrani">
+        <div id="gri-bolge" class="bolge">
+            <div id="lobi-karakter" class="oyuncu" style="position:absolute; transition: all 0.5s ease;"></div>
+            <p style="font-size: 10px;">Lobide gezebilirsiniz (Tıkla ve Git)</p>
+        </div>
+        <div id="yesil-bolge" class="bolge">
+            <h3>ROLLER (YEŞİL)</h3>
+            <div id="rol-listesi"></div>
+        </div>
+        <div id="mor-bolge" class="bolge">
+            <h3>ÖZELLEŞTİR (MOR)</h3>
+            <input type="text" id="p-baloncuk" maxlength="4" placeholder="4 Harf Baloncuk">
+        </div>
+        <div id="acik-mavi-bolge" class="bolge">
+            <span id="lobi-kodu-display">KOD: ------</span>
+            <button onclick="oyunuBaslat()">OYUNU BAŞLAT</button>
+            <button onclick="location.reload()">ÇIKIŞ</button>
+        </div>
+        <div id="lacivert-bolge" class="bolge">
+            <h3>AYARLAR (LACİVERT)</h3>
+            Gündüz: <input type="range" id="g-sure" min="10" max="120" value="60"> <br>
+            Gece: <input type="range" id="n-sure" min="10" max="120" value="30">
+        </div>
+    </div>
+
+    <div id="oyun-ekrani">
+        <div id="ates">🔥</div>
+        <div id="oba-alan"></div>
+        <div id="alt-bilgi" style="position:fixed; bottom:10px; left:10px; background:rgba(0,0,0,0.5); padding:10px;"></div>
+    </div>
+
+    <script>
+        let lobiKodu = "";
+        let roller = ["Şifacı", "Bekçi", "İzci", "Bilge", "Dirençli", "Avcı", "İspiyoncu", "Gölge Katil", "Kaos Katili", "Kötü Polis", "Kötü Gözcü", "Meczup"];
+        let oyuncular = [];
+
+        // GİRİŞ FONKSİYONLARI
+        function lobiKur() {
+            const isim = document.getElementById('p-isim').value;
+            if(!isim) return alert("İsim yazmalısın!");
+            lobiKodu = Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('lobi-kodu-display').innerText = "KOD: " + lobiKodu;
+            document.getElementById('giris-ekrani').style.display = 'none';
+            document.getElementById('lobi-ekrani').style.display = 'grid';
+            
+            // Rol listesini oluştur
+            const list = document.getElementById('rol-listesi');
+            roller.forEach(r => {
+                list.innerHTML += `<div><input type="checkbox" checked> ${r}</div>`;
+            });
+        }
+
+        function kodlaKatil() {
+            let kod = prompt("6 Haneli Lobi Kodunu Girin:");
+            if(kod && kod.length === 6) lobiKur();
+        }
+
+        // LOBİDE GEZİNME (Gri Bölge)
+        document.getElementById('gri-bolge').onclick = function(e) {
+            const char = document.getElementById('lobi-karakter');
+            char.style.left = (e.clientX - 15) + "px";
+            char.style.top = (e.clientY - 15) + "px";
+        };
+
+        // OYUNU BAŞLATMA (Oba Kurulumu)
+        function oyunuBaslat() {
+            document.getElementById('lobi-ekrani').style.display = 'none';
+            document.getElementById('oyun-ekrani').style.display = 'block';
+            obaOlustur(12); // Max 12 çadır
+        }
+
+        function obaOlustur(sayi) {
+            const alan = document.getElementById('oba-alan');
+            const merkezX = window.innerWidth / 2;
+            const merkezY = window.innerHeight / 2;
+            const yaricap = 250;
+
+            for (let i = 0; i < sayi; i++) {
+                const aci = (i * 2 * Math.PI) / sayi;
+                const x = merkezX + yaricap * Math.cos(aci) - 40;
+                const y = merkezY + yaricap * Math.sin(aci) - 40;
+
+                alan.innerHTML += `
+                    <div class="cadir" style="left:${x}px; top:${y}px" onclick="rolKullan(${i})">
+                        <div class="oy-sayisi"></div>
+                        <div style="font-size:40px">⛺</div>
+                        <div class="oyuncu" id="oyuncu-${i}">
+                            <div class="baloncuk">${document.getElementById('p-baloncuk').value || '???'}</div>
+                        </div>
+                        <div class="nick-label">${document.getElementById('p-isim').value}</div>
+                    </div>`;
+            }
+        }
+
+        // 3.3 SANİYE YÜRÜME MEKANİĞİ
+        function rolKullan(id) {
+            const oyuncu = document.getElementById('oyuncu-0'); // Kendi karakterimiz
+            const hedefCadir = document.querySelectorAll('.cadir')[id];
+            
+            // Hedefe yürü
+            oyuncu.style.position = "fixed";
+            const rect = hedefCadir.getBoundingClientRect();
+            oyuncu.style.left = rect.left + "px";
+            oyuncu.style.top = rect.top + "px";
+
+            document.getElementById('alt-bilgi').innerText = "Özellik kullanılıyor... (3.3s)";
+            
+            setTimeout(() => {
+                alert("Yetenek uygulandı!");
+                // Çadıra geri dön
+                oyuncu.style.left = ""; 
+                oyuncu.style.top = "";
+            }, 3300);
+        }
+
+        // GECE/GÜNDÜZ DÖNGÜSÜ
+        setInterval(() => {
+            const ekran = document.getElementById('oyun-ekrani');
+            ekran.classList.toggle('gece');
+        }, 15000); // Test için her 15 saniyede bir değişir
+    </script>
+</body>
+</html>
