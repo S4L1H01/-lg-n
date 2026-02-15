@@ -1,0 +1,64 @@
+body {
+    background-color: #1a3c1a;
+    color: #f0e68c;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+#game-container {
+    width: 90%;
+    max-width: 800px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    border: 2px solid #3e2723;
+}
+
+#oba-meydani {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.cadir-alani {
+    position: relative;
+    text-align: center;
+}
+
+.baloncuk {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    color: black;
+    border-radius: 5px;
+    padding: 2px 5px;
+    font-weight: bold;
+    font-size: 12px;
+    min-width: 30px;
+    border: 1px solid #000;
+}
+
+.cadir-ikonu {
+    font-size: 60px;
+}
+
+.nick {
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+#kontrol-paneli {
+    margin-top: 20px;
+    padding: 15px;
+    border-top: 1px solid #5d4037;
+}
+
+input { padding: 8px; border-radius: 5px; border: none; }
+button { padding: 8px 15px; background: #5d4037; color: white; border: none; border-radius: 5px; cursor: pointer; }

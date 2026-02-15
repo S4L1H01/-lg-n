@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ülgün: Kabile Toplantısı</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <h1>🦉 Ülgün: Kabile Toplantısı</h1>
+        <div id="lider-alani">Kabile Lideri: <span id="lider-ismi">Seçilmedi</span></div>
+        
+        <div id="oba-meydani">
+            </div>
+
+        <div id="kontrol-paneli">
+            <input type="text" id="baloncuk-input" maxlength="3" placeholder="3 harf...">
+            <button onclick="baloncukGuncelle()">Baloncuğu Değiştir</button>
+            <button onclick="oyunuBaslat()" id="start-btn">Oyunu Başlat</button>
+        </div>
+
+        <div id="olay-gunlugu">
+            <p>Obaya hoş geldin Ülgün. Hazırsan oyunu başlat!</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
