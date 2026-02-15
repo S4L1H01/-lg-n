@@ -4,43 +4,167 @@
     <meta charset="UTF-8">
     <title>ÜLGÜN - Kabile Meclisi</title>
     <style>
-        :root { --mor: #a29bfe; --kirmizi: #ff7675; --mavi: #74b9ff; --yesil: #55efc4; --altin: #ffeaa7; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background: #000; color: white; overflow: hidden; }
+        /* CANLI RENKLER VE ANA YAPI */
+        :root { --mor: #d63031; --kirmizi: #ff7675; --mavi: #0984e3; --yesil: #00b894; --altin: #fdcb6e; --arka-plan: #1e1e26; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Tahoma, sans-serif; background: #000; color: white; overflow: hidden; }
 
-        /* ANA MENÜ (image_d6a521.png) */
-        #ana-menu { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 30px; background: #0f0f0f; }
-        .menu-box { width: 400px; padding: 30px; border: 5px solid; text-align: center; cursor: pointer; transition: 0.3s; font-weight: bold; font-size: 24px; border-radius: 15px; }
-        .box-isim { border-color: var(--mor); cursor: default; }
-        .box-katil { border-color: var(--kirmizi); }
-        .box-kur { border-color: var(--mavi); }
-        input.menu-input { background: transparent; border: none; border-bottom: 3px solid var(--mor); color: white; text-align: center; font-size: 24px; width: 90%; outline: none; }
+        /* 1. GİRİŞ EKRANI (image_d6a521.png) */
+        #ana-menu { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 25px; background: #0a0a0a; z-index: 100; }
+        .menu-box { width: 450px; padding: 35px; border: 6px solid; text-align: center; cursor: pointer; transition: 0.3s; font-weight: bold; font-size: 28px; border-radius: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .box-isim { border-color: #a29bfe; cursor: default; background: rgba(162, 155, 254, 0.1); }
+        .box-katil { border-color: #d63031; background: rgba(214, 48, 49, 0.1); }
+        .box-kur { border-color: #0984e3; background: rgba(9, 132, 227, 0.1); }
+        input.menu-input { background: transparent; border: none; border-bottom: 4px solid #a29bfe; color: white; text-align: center; font-size: 28px; width: 90%; outline: none; }
 
-        /* LOBİ EKRANI (image_d69642.png) */
-        #lobi-ekrani { display: none; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1.5fr 1fr 0.8fr; height: 100vh; gap: 10px; background: #1e1e1e; padding: 10px; }
-        .bolge { border: 3px solid #333; position: relative; padding: 20px; overflow: hidden; display: flex; flex-direction: column; border-radius: 10px; }
-        #gri-bolge { background: #2d3436; cursor: crosshair; } 
-        #yesil-bolge { grid-row: span 2; background: #163020; } 
-        #mor-bolge { background: #2d142c; } 
-        #lacivert-bolge { background: #0f172a; font-size: 20px; } 
-        #acik-mavi-bolge { background: #0e2a2a; flex-direction: row; justify-content: space-around; align-items: center; }
+        /* 2. LOBİ EKRANI (image_d69642.png) */
+        #lobi-ekrani { display: none; grid-template-columns: 1.5fr 1fr; grid-template-rows: 1.5fr 1fr 0.8fr; height: 100vh; gap: 12px; background: #2d3436; padding: 15px; }
+        .bolge { border: 4px solid #444; position: relative; padding: 25px; overflow: hidden; border-radius: 15px; box-shadow: inset 0 0 10px #000; }
+        #gri-bolge { background: #353b48; cursor: crosshair; } /* Karakter Gezdirme */
+        #yesil-bolge { grid-row: span 2; background: #1b3d2f; border-color: var(--yesil); } /* Roller */
+        #mor-bolge { background: #3d1b3d; border-color: #a29bfe; } /* Özelleştirme */
+        #lacivert-bolge { background: #1b1b3d; border-color: var(--mavi); font-size: 22px; } /* Süre Ayarı */
+        #acik-mavi-bolge { background: #1b3d3d; display: flex; justify-content: space-around; align-items: center; border-color: #00cec9; }
         
         /* LOBİ KARAKTERİ */
-        .lobi-oyuncu { position: absolute; width: 50px; height: 50px; background: #dfe6e9; border-radius: 50%; transition: all 0.5s ease; border: 3px solid #2d3436; }
-        .lobi-isim-etiket { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); background: black; padding: 2px 8px; border-radius: 5px; font-size: 14px; white-space: nowrap; }
+        .lobi-p { position: absolute; width: 60px; height: 60px; background: #f5f6fa; border-radius: 50%; transition: all 0.5s ease; border: 4px solid #2f3640; display: flex; align-items: center; justify-content: center; color: black; font-weight: bold; }
+        .lobi-p span { position: absolute; top: -40px; background: #000; color: #fff; padding: 4px 12px; border-radius: 8px; font-size: 16px; border: 1px solid #fff; }
 
-        /* ROL LİSTESİ AYARLARI (Yeşil Bölge) */
-        .rol-item { display: flex; align-items: center; gap: 15px; margin-bottom: 12px; font-size: 22px; color: var(--yesil); }
-        .rol-checkbox { width: 25px; height: 25px; cursor: pointer; }
+        /* ROL AYARLARI (BÜYÜTÜLDÜ) */
+        .rol-item { display: flex; align-items: center; gap: 20px; margin-bottom: 15px; font-size: 24px; color: #55efc4; font-weight: bold; }
+        .rol-check { width: 30px; height: 30px; cursor: pointer; }
 
-        /* OBA / OYUN ALANI (image_d62239.png) */
-        #oyun-ekrani { display: none; background: #1e4d1e; height: 100vh; position: relative; }
-        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 70px; z-index: 10; filter: drop-shadow(0 0 30px orange); }
-        .cadir { position: absolute; width: 100px; text-align: center; }
-        .oyuncu-govde { width: 45px; height: 45px; background: #636e72; border-radius: 50%; margin: 0 auto; position: relative; border: 3px solid #000; transition: all 3.3s linear; }
-        .baloncuk-ust { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); background: white; color: black; font-size: 14px; padding: 3px 8px; border-radius: 6px; font-weight: bold; border: 2px solid #000; }
+        /* 3. OYUN / OBA (image_d62239.png) */
+        #oyun-ekrani { display: none; background: #228b22; height: 100vh; position: relative; }
+        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; z-index: 10; filter: drop-shadow(0 0 40px orange); }
+        .cadir { position: absolute; width: 120px; text-align: center; }
+        .oyuncu { width: 50px; height: 50px; background: #b2bec3; border-radius: 50%; margin: 0 auto; position: relative; border: 4px solid #000; transition: all 3.3s linear; }
+        .baloncuk { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); background: white; color: black; font-size: 16px; padding: 4px 10px; border-radius: 8px; font-weight: bold; border: 2px solid #000; }
         
-        /* SÜRE GÖSTERGESİ */
-        #sure-tabela { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.8); padding: 15px; border-radius: 10px; border: 2px solid var(--altin); font-size: 24px; color: var(--altin); z-index: 100; }
+        #sayac-tabela { position: fixed; top: 30px; right: 30px; background: rgba(0,0,0,0.9); padding: 20px; border-radius: 15px; border: 3px solid var(--altin); font-size: 30px; color: var(--altin); font-weight: bold; z-index: 200; }
 
-        .gece-modu { filter: brightness(0.2) contrast(1.1); }
-        .gece-modu .baloncuk-ust, .gece-modu .lobi-isim-etiket, .gece-modu .nick-label { display: none
+        .gece { filter: brightness(0.25) contrast(1.2); }
+        .gece .baloncuk, .gece .lobi-p span { display: none !important; }
+
+        button { padding: 20px 40px; cursor: pointer; border: none; border-radius: 12px; font-weight: bold; font-size: 22px; transition: 0.2s; }
+        button:hover { filter: brightness(1.2); transform: translateY(-3px); }
+    </style>
+</head>
+<body>
+
+    <div id="ana-menu">
+        <div class="menu-box box-isim"><input type="text" id="nick" class="menu-input" placeholder="ADINIZI YAZIN"></div>
+        <div class="menu-box box-katil" onclick="katilKodu()">KOD İLE KATIL</div>
+        <div class="menu-box box-kur" onclick="kurLobi()">LOBİ KUR</div>
+    </div>
+
+    <div id="lobi-ekrani">
+        <div id="gri-bolge" class="bolge" onclick="yuruLobi(event)">
+            <div id="p-lobi" class="lobi-p" style="left: 50px; top: 50px;">
+                <span id="p-lobi-isim">İsim</span>
+            </div>
+            <p style="color:var(--altin); font-size: 18px;">LOBİ: Tıklanan yere isminizle beraber gidersiniz.</p>
+        </div>
+        <div id="yesil-bolge" class="bolge">
+            <h2>ROLLER</h2>
+            <div id="roller-alan" style="overflow-y:auto; height: 90%;"></div>
+        </div>
+        <div id="mor-bolge" class="bolge">
+            <h3>4 HARF BALONCUK</h3>
+            <input type="text" id="balon-text" maxlength="4" style="padding:20px; font-size:30px; text-align:center; border-radius:10px;" placeholder="Örn: 1234">
+        </div>
+        <div id="lacivert-bolge" class="bolge">
+            <h3>SÜRE AYARLARI</h3>
+            Gündüz: <b id="g-sn">60</b>s <input type="range" id="g-kay" min="10" max="180" value="60" oninput="document.getElementById('g-sn').innerText=this.value"><br><br>
+            Gece: <b id="n-sn">30</b>s <input type="range" id="n-kay" min="10" max="180" value="30" oninput="document.getElementById('n-sn').innerText=this.value">
+        </div>
+        <div id="acik-mavi-bolge" class="bolge">
+            <h2 id="kod-gorun" style="color:#00cec9">KOD: ------</h2>
+            <button style="background:var(--yesil)" onclick="baslat()">BAŞLAT</button>
+            <button style="background:var(--mor)" onclick="location.reload()">ÇIKIŞ</button>
+        </div>
+    </div>
+
+    <div id="oyun-ekrani">
+        <div id="sayac-tabela">HAZIRLANIN...</div>
+        <div id="ates">🔥</div>
+        <div id="oba-ici"></div>
+    </div>
+
+    <script>
+        const roller = ["Şifacı", "Bekçi", "İzci", "Bilge", "Dirençli", "Avcı", "İspiyoncu", "Gölge Katil", "Kaos Katili", "Kötü Polis", "Kötü Gözcü", "Meczup"];
+
+        function kurLobi() {
+            const isim = document.getElementById('nick').value;
+            if(!isim) return alert("Lütfen isim girin!");
+            document.getElementById('p-lobi-isim').innerText = isim;
+            document.getElementById('kod-gorun').innerText = "KOD: " + Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('ana-menu').style.display = 'none';
+            document.getElementById('lobi-ekrani').style.display = 'grid';
+            
+            const rAlan = document.getElementById('roller-alan');
+            roller.forEach(r => { 
+                rAlan.innerHTML += `<div class="rol-item"><input type="checkbox" class="rol-check" checked> ${r}</div>`; 
+            });
+        }
+
+        function katilKodu() {
+            let k = prompt("6 Haneli Lobi Kodu:");
+            if(k && k.length === 6) kurLobi();
+        }
+
+        function yuruLobi(e) {
+            const p = document.getElementById('p-lobi');
+            const kutu = document.getElementById('gri-bolge').getBoundingClientRect();
+            p.style.left = (e.clientX - kutu.left - 30) + "px";
+            p.style.top = (e.clientY - kutu.top - 30) + "px";
+        }
+
+        function baslat() {
+            document.getElementById('lobi-ekrani').style.display = 'none';
+            document.getElementById('oyun-ekrani').style.display = 'block';
+            kurOba(12);
+            zamanlayici();
+        }
+
+        function kurOba(adet) {
+            const oba = document.getElementById('oba-ici');
+            const w = window.innerWidth / 2; const h = window.innerHeight / 2;
+            for (let i = 0; i < adet; i++) {
+                const aci = (i * 2 * Math.PI) / adet;
+                const x = w + 300 * Math.cos(aci) - 60;
+                const y = h + 300 * Math.sin(aci) - 60;
+                oba.innerHTML += `
+                    <div class="cadir" style="left:${x}px; top:${y}px" onclick="rolGit(${i})">
+                        <div style="font-size:60px">⛺</div>
+                        <div class="oyuncu" id="p-oba-${i}">
+                            <div class="baloncuk">${document.getElementById('balon-text').value || 'OLAY'}</div>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function rolGit(id) {
+            const p = document.getElementById('p-oba-0');
+            const hedef = document.querySelectorAll('.cadir')[id].getBoundingClientRect();
+            const eski = p.getBoundingClientRect();
+            p.style.position = "fixed"; p.style.left = eski.left + "px"; p.style.top = eski.top + "px";
+            setTimeout(() => { p.style.left = hedef.left + 35 + "px"; p.style.top = hedef.top + 35 + "px"; }, 50);
+            setTimeout(() => { p.style.position = "relative"; p.style.left = "0"; p.style.top = "0"; }, 3350);
+        }
+
+        function zamanlayici() {
+            let sn = parseInt(document.getElementById('g-sn').innerText);
+            let durum = "GÜNDÜZ";
+            setInterval(() => {
+                sn--;
+                if(sn <= 0) {
+                    durum = (durum === "GÜNDÜZ") ? "GECE" : "GÜNDÜZ";
+                    sn = (durum === "GÜNDÜZ") ? parseInt(document.getElementById('g-sn').innerText) : parseInt(document.getElementById('n-sn').innerText);
+                    document.getElementById('oyun-ekrani').className = (durum === "GECE") ? "gece" : "";
+                }
+                document.getElementById('sayac-tabela').innerText = durum + ": " + sn + "s";
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
