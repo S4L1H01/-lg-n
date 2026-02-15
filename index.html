@@ -3,200 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ÜLGÜN: KABİLE v4.5</title>
+    <title>ÜLGÜN: KABİLE v5.0</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --mor: #a855f7; --kirmizi: #ef4444; --mavi: #3b82f6; --yesil: #22c55e; --altin: #fbbf24; --arkaplan: #020617; }
         * { box-sizing: border-box; touch-action: manipulation; user-select: none; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--arkaplan); color: white; overflow: hidden; }
 
-        .ekran { display: none; height: 100vh; width: 100vw; position: absolute; }
-        #ana-menu { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: radial-gradient(circle, #1e1b4b, #020617); }
-        
-        /* KARAKTER TASARIMI */
-        .char-body { width: 45px; height: 55px; position: relative; transition: 0.2s linear; }
-        .char-cape { width: 100%; height: 80%; background: #475569; border-radius: 10px 10px 5px 5px; position: absolute; bottom: 0; border: 2px solid #000; }
-        .char-head { width: 24px; height: 24px; background: #ffdbac; border-radius: 50%; border: 2px solid #000; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 2; }
-        .char-eyes { width: 100%; position: absolute; top: 10px; display: flex; justify-content: space-around; padding: 0 4px; }
-        .eye { width: 4px; height: 4px; background: black; border-radius: 50%; }
+        /* UI ELEMENTS */
+        .ekran { display: none; height: 100vh; width: 100vw; position: absolute; flex-direction: column; align-items: center; justify-content: center; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 2px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .btn { padding: 12px 24px; border-radius: 12px; border: none; font-family: 'Cinzel'; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 16px; margin: 5px; }
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+        .btn-primary { background: var(--altin); color: #000; }
+        .btn-secondary { background: var(--mavi); color: #fff; }
 
-        /* LOBİ VE ROL LİSTESİ */
-        #lobi-ekrani { grid-template-columns: 1.2fr 1fr; grid-template-rows: 1fr 100px; gap: 15px; padding: 20px; background: #0f172a; }
-        .bolge { border: 2px solid #334155; border-radius: 20px; position: relative; padding: 15px; background: rgba(30, 41, 59, 0.4); overflow: hidden; }
-        #roles-list { height: 100%; overflow-y: auto; padding-right: 5px; }
-        .role-item { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); margin-bottom: 5px; padding: 8px; border-radius: 10px; border-left: 4px solid var(--yesil); }
-        .info-btn { background: var(--mavi); color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; font-weight: bold; }
+        /* KARAKTER TASARIMI */
+        .char { width: 40px; height: 50px; position: absolute; transition: 0.15s linear; z-index: 10; }
+        .char-cape { width: 100%; height: 75%; background: #475569; border-radius: 8px 8px 4px 4px; position: absolute; bottom: 0; border: 2px solid #000; }
+        .char-head { width: 22px; height: 22px; background: #ffdbac; border-radius: 50%; border: 2px solid #000; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+        .name-tag { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 900; white-space: nowrap; text-shadow: 2px 2px 0 #000; }
+
+        /* LOBİ */
+        #lobi-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; width: 90%; height: 80%; max-width: 1200px; }
+        #player-canvas { background: #0f172a; border-radius: 20px; border: 3px solid #1e293b; position: relative; overflow: hidden; }
+        #roles-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .role-card { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
+        .info-bubble { width: 24px; height: 24px; background: var(--mor); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; font-weight: 900; }
 
         /* OYUN */
-        #oyun-ekrani { background: #14532d; transition: background 2s; }
-        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; z-index: 10; filter: drop-shadow(0 0 40px orange); }
-        .gece-modu { background: #080c29 !important; }
+        #oyun-ekrani { background: radial-gradient(circle, #14532d, #064e3b); }
+        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; filter: drop-shadow(0 0 30px orange); animation: pulse 0.5s infinite alternate; }
+        @keyframes pulse { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; } }
+        .gece-modu { background: radial-gradient(circle, #1e1b4b, #020617) !important; }
         
-        #rol-tabelasi { position: fixed; top: 20px; right: 20px; background: var(--altin); color: #000; padding: 15px 25px; border-radius: 15px; font-weight: 900; z-index: 1001; border: 3px solid #000; font-family: 'Cinzel'; }
-        #info-bar { position: fixed; top: 25px; width: 100%; text-align: center; font-size: 30px; font-weight: 900; z-index: 100; font-family: 'Cinzel'; text-shadow: 2px 2px #000; }
-
-        .btn { padding: 15px 30px; border-radius: 12px; border: none; font-weight: 900; font-family: 'Cinzel'; cursor: pointer; background: var(--yesil); color: black; }
+        #top-ui { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
+        .timer-box { font-family: 'Cinzel'; font-size: 28px; font-weight: 900; text-shadow: 3px 3px 0 #000; pointer-events: auto; }
+        .role-box { background: var(--altin); color: #000; padding: 10px 20px; border-radius: 12px; font-weight: 900; font-family: 'Cinzel'; border: 3px solid #000; pointer-events: auto; }
     </style>
 </head>
 <body>
 
-    <div id="ana-menu" class="ekran" style="display: flex;">
-        <h1 style="color:var(--altin); font-size: 60px; font-family:'Cinzel';">ÜLGÜN</h1>
-        <input type="text" id="my-name" placeholder="ADINIZ" style="background:transparent; border:none; border-bottom:3px solid var(--mor); color:white; font-size:24px; text-align:center; margin-bottom:20px; outline:none;">
-        <button class="btn" onclick="hostLobby()" style="margin-bottom:10px;">LOBİ KUR</button>
-        <button class="btn" style="background:var(--kirmizi)" onclick="joinLobby()">KODLA KATIL</button>
-    </div>
-
-    <div id="lobi-ekrani" class="ekran">
-        <div class="bolge" id="player-area" onclick="sendMove(event)"></div>
-        <div class="bolge">
-            <h3 style="color:var(--yesil); font-family:'Cinzel'; margin-top:0;">📜 ROLLER</h3>
-            <div id="roles-list"></div>
-        </div>
-        <div class="bolge" style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center;">
-            <div id="my-code" onclick="copyCode()" style="cursor:pointer; font-family:'Cinzel'; color:var(--mavi)">KOD: ---</div>
-            <div id="lobby-count" style="font-weight:bold;">1 Oyuncu Hazır</div>
-            <button class="btn" onclick="startGame()">MECLİSİ TOPLA</button>
+    <div id="screen-login" class="ekran" style="display: flex;">
+        <h1 style="font-family: 'Cinzel'; font-size: 70px; color: var(--altin); margin: 0; text-shadow: 5px 5px 0 var(--mor);">ÜLGÜN</h1>
+        <div class="glass" style="width: 350px; text-align: center; margin-top: 20px;">
+            <input type="text" id="input-nick" placeholder="İSMİNİZİ YAZIN" maxlength="12" style="width: 100%; background: transparent; border: none; border-bottom: 3px solid var(--altin); color: #fff; font-size: 20px; text-align: center; outline: none; margin-bottom: 25px;">
+            <button class="btn btn-primary" style="width: 100%" onclick="initPeer(true)">LOBİ OLUŞTUR</button>
+            <button class="btn btn-secondary" style="width: 100%" onclick="initPeer(false)">KABİLEYE KATIL</button>
         </div>
     </div>
 
-    <div id="oyun-ekrani" class="ekran">
-        <div id="rol-tabelasi">ROLÜN: ...</div>
-        <div id="info-bar">☀️ GÜNDÜZ</div>
+    <div id="screen-lobby" class="ekran">
+        <div id="lobi-grid">
+            <div id="player-canvas" onclick="handleLobbyMove(event)">
+                <div style="position: absolute; bottom: 10px; left: 10px; color: rgba(255,255,255,0.3); font-weight: bold;">HAREKET ETMEK İÇİN DOKUN</div>
+            </div>
+            <div class="glass" id="roles-list">
+                <h3 style="font-family: 'Cinzel'; color: var(--altin); margin-top: 0;">📜 KABİLE ROLLERİ</h3>
+                </div>
+        </div>
+        <div style="margin-top: 20px; display: flex; align-items: center; gap: 30px;">
+            <div id="display-code" style="font-family: 'Cinzel'; font-size: 24px; color: var(--mavi); cursor: pointer;" onclick="copyLobbyCode()">KOD: --- (KOPYALA)</div>
+            <div id="player-count" style="font-weight: 900; font-size: 20px;">1/12 Oyuncu</div>
+            <button id="start-btn" class="btn btn-primary" onclick="requestStart()" style="display: none;">OYUNU BAŞLAT</button>
+        </div>
+    </div>
+
+    <div id="screen-game" class="ekran">
+        <div id="top-ui">
+            <div id="game-timer" class="timer-box">☀️ GÜNDÜZ: 60s</div>
+            <div id="game-role" class="role-box">ROL: ...</div>
+        </div>
         <div id="ates">🔥</div>
-        <div id="oba"></div>
+        <div id="game-oba" style="width: 100%; height: 100%; position: relative;"></div>
     </div>
 
     <script>
-        let peer; let connections = []; let players = []; let isHost = false;
         const ROLLER = [
-            {n: "Şifacı", d: "Gece birini iyileştirir."}, {n: "Katil", d: "Gece birini öldürür."},
-            {n: "Bekçi", d: "Birini korumaya alır."}, {n: "Gözcü", d: "Kimin kime gittiğini görür."},
-            {n: "Bilge", d: "Birinin rolünü öğrenir."}, {n: "Meczup", d: "Kazanmak için asılması gerekir."},
-            {n: "Avcı", d: "Ölürken birini de götürür."}, {n: "İzci", d: "Geceleri iz sürer."},
-            {n: "Dirençli", d: "İlk saldırıda ölmez."}, {n: "İspiyoncu", d: "Fısıldaşmaları duyar."},
-            {n: "Gölge", d: "Karakterini gizler."}, {n: "Kötü Polis", d: "Sorgulama yapar."},
-            {n: "Kaos", d: "Her gece farklı bir güç."}, {n: "Gardiyan", d: "Birini hapse atar."}
+            {n:"Şifacı", d:"Gece bir oyuncuyu ölümden kurtarabilir."}, {n:"Katil", d:"Kabilenin düşmanı. Her gece birini yok eder."},
+            {n:"Bekçi", d:"Bir oyuncuyu korumaya alır, katil onu vuramaz."}, {n:"Gözcü", d:"Gece kimin kime gittiğini gizlice izler."},
+            {n:"Bilge", d:"Bir oyuncunun gerçek rolünü her gece sorgulayabilir."}, {n:"Meczup", d:"Asılarak ölürse tek başına kazanır."},
+            {n:"Avcı", d:"Öldürüldüğünde yanında birini daha götürür."}, {n:"İzci", d:"Geceleri kabiledeki ayak izlerini takip eder."},
+            {n:"Dirençli", d:"İlk saldırıdan sağ kurtulur."}, {n:"İspiyoncu", d:"Fısıldaşmaları rüzgardan duyar."},
+            {n:"Gölge", d:"Sorgulamalarda rolü farklı görünür."}, {n:"Kötü Polis", d:"Her gece birini sorguya çeker."},
+            {n:"Kaos", d:"Her gece rastgele başka bir rolün gücünü kullanır."}, {n:"Gardiyan", d:"Birini hücreye atarak o geceki gücünü engeller."}
         ];
 
-        function hostLobby() {
-            const nick = document.getElementById('my-name').value;
-            if(!nick) return alert("İsim yaz!");
-            isHost = true;
-            peer = new Peer(Math.random().toString(36).substring(2, 7).toUpperCase());
+        let peer, connections = [], players = [], myId, myNick;
+        let isHost = false;
+
+        // --- ONLINE ÇEKİRDEK ---
+        function initPeer(asHost) {
+            myNick = document.querySelector('#input-nick').value.toUpperCase();
+            if(!myNick) return alert("Kabile adınızı girin!");
+            isHost = asHost;
+            
+            const randomID = isHost ? Math.random().toString(36).substring(2, 7).toUpperCase() : null;
+            peer = new Peer(randomID);
+
             peer.on('open', id => {
-                document.getElementById('my-code').innerText = "KOD: " + id + " (Kopyala)";
-                players.push({id, name: nick, x: 50, y: 50});
-                updateLobby();
-            });
-            peer.on('connection', c => {
-                c.on('open', () => {
-                    connections.push(c);
-                    c.on('data', data => handleData(data, c));
-                });
-            });
-            initLobbyUI();
-        }
-
-        function joinLobby() {
-            const nick = document.getElementById('my-name').value;
-            const code = prompt("Kod:");
-            if(!nick || !code) return;
-            peer = new Peer();
-            peer.on('open', () => {
-                const c = peer.connect(code.toUpperCase());
-                c.on('open', () => {
-                    connections.push(c);
-                    c.send({type: 'join', name: nick});
-                    initLobbyUI();
-                    document.getElementById('my-code').innerText = "KOD: " + code;
-                });
-                c.on('data', handleData);
-            });
-        }
-
-        function handleData(data, c) {
-            if(data.type === 'join' && isHost) {
-                players.push({id: c.peer, name: data.name, x: 50, y: 50});
-                broadcast({type: 'sync', players});
-                updateLobby();
-            }
-            if(data.type === 'sync') { players = data.players; updateLobby(); }
-            if(data.type === 'move') { updateRemotePos(data.id, data.x, data.y); }
-            if(data.type === 'start') { runGame(data.roles); }
-        }
-
-        function initLobbyUI() {
-            document.getElementById('ana-menu').style.display = 'none';
-            document.getElementById('lobi-ekrani').style.display = 'grid';
-            const list = document.getElementById('roles-list');
-            ROLLER.forEach(r => {
-                list.innerHTML += `<div class="role-item"><span>${r.n}</span><div class="info-btn" onclick="alert('${r.d}')">?</div></div>`;
-            });
-        }
-
-        function sendMove(e) {
-            const rect = document.getElementById('player-area').getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left - 22;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top - 22;
-            updateRemotePos(peer.id, x, y);
-            const msg = {type: 'move', id: peer.id, x, y};
-            if(isHost) broadcast(msg); else connections[0].send(msg);
-        }
-
-        function updateRemotePos(id, x, y) {
-            const p = document.getElementById(`p-${id}`);
-            if(p) { p.style.left = x + "px"; p.style.top = y + "px"; }
-        }
-
-        function updateLobby() {
-            const area = document.getElementById('player-area');
-            area.innerHTML = "";
-            players.forEach(p => {
-                area.innerHTML += `<div id="p-${p.id}" class="char-body" style="position:absolute; left:${p.x}px; top:${p.y}px">
-                    <div class="char-head"><div class="char-eyes"><div class="eye"></div><div class="eye"></div></div></div>
-                    <div class="char-cape"></div><div style="font-size:10px; text-align:center;">${p.name}</div></div>`;
-            });
-            document.getElementById('lobby-count').innerText = players.length + " Oyuncu Hazır";
-        }
-
-        function broadcast(data) { connections.forEach(c => c.send(data)); }
-
-        function startGame() {
-            if(!isHost) return;
-            const roles = ROLLER.map(r => r.n).sort(() => Math.random() - 0.5);
-            broadcast({type: 'start', roles});
-            runGame(roles);
-        }
-
-        function runGame(roles) {
-            document.getElementById('lobi-ekrani').style.display = 'none';
-            document.getElementById('oyun-ekrani').style.display = 'block';
-            const myIndex = players.findIndex(p => p.id === peer.id);
-            document.getElementById('rol-tabelasi').innerText = "ROLÜN: " + roles[myIndex];
-
-            const count = players.length < 2 ? 4 : players.length; // Tek başınaysa 4 kişi (botlarla) başlar
-            const oba = document.getElementById('oba');
-            const center = {x: window.innerWidth/2, y: window.innerHeight/2};
-            const r = Math.min(window.innerWidth, window.innerHeight) * 0.35;
-
-            oba.innerHTML = "";
-            for(let i=0; i<count; i++) {
-                const angle = (i * 2 * Math.PI) / count;
-                const x = center.x + r * Math.cos(angle) - 45;
-                const y = center.y + r * Math.sin(angle) - 45;
-                const name = players[i] ? players[i].name : "Bot " + (i+1);
-                oba.innerHTML += `<div style="position:absolute; left:${x}px; top:${y}px; text-align:center;">
-                    <div style="font-size:50px">⛺</div><div style="font-weight:900;">${name}</div></div>`;
-            }
-        }
-
-        function copyCode() {
-            const c = document.getElementById('my-code').innerText.split(' ')[1];
-            navigator.clipboard.writeText(c);
-            alert("Kod kopyalandı!");
-        }
-    </script>
-</body>
-</html>
+                myId = id;
+                if(isHost) {
+                    document.querySelector('#display-code').innerText = "KOD: " + id + " (KOPYALA)";
+                    document.querySelector
