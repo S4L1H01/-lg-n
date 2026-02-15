@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ÜLGÜN: KABİLE v5.0</title>
+    <title>ÜLGÜN: KABİLE v5.1 - FIXED</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -11,99 +11,230 @@
         * { box-sizing: border-box; touch-action: manipulation; user-select: none; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--arkaplan); color: white; overflow: hidden; }
 
-        /* UI ELEMENTS */
-        .ekran { display: none; height: 100vh; width: 100vw; position: absolute; flex-direction: column; align-items: center; justify-content: center; }
+        .ekran { display: none; height: 100vh; width: 100vw; position: absolute; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #0f172a, #020617); }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 2px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .btn { padding: 12px 24px; border-radius: 12px; border: none; font-family: 'Cinzel'; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 16px; margin: 5px; }
-        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
+        .btn { padding: 12px 24px; border-radius: 12px; border: none; font-family: 'Cinzel'; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 16px; margin: 5px; width: 100%; }
+        .btn:active { transform: scale(0.95); }
         .btn-primary { background: var(--altin); color: #000; }
         .btn-secondary { background: var(--mavi); color: #fff; }
 
-        /* KARAKTER TASARIMI */
-        .char { width: 40px; height: 50px; position: absolute; transition: 0.15s linear; z-index: 10; }
-        .char-cape { width: 100%; height: 75%; background: #475569; border-radius: 8px 8px 4px 4px; position: absolute; bottom: 0; border: 2px solid #000; }
-        .char-head { width: 22px; height: 22px; background: #ffdbac; border-radius: 50%; border: 2px solid #000; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
-        .name-tag { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 900; white-space: nowrap; text-shadow: 2px 2px 0 #000; }
-
         /* LOBİ */
-        #lobi-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; width: 90%; height: 80%; max-width: 1200px; }
-        #player-canvas { background: #0f172a; border-radius: 20px; border: 3px solid #1e293b; position: relative; overflow: hidden; }
-        #roles-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .role-card { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
-        .info-bubble { width: 24px; height: 24px; background: var(--mor); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; font-weight: 900; }
+        #lobi-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; width: 90%; height: 75%; max-width: 1200px; }
+        #player-canvas { background: #0f172a; border-radius: 20px; border: 3px solid #1e293b; position: relative; overflow: hidden; cursor: crosshair; }
+        
+        /* KARAKTER */
+        .char { width: 40px; height: 50px; position: absolute; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10; }
+        .char-cape { width: 100%; height: 75%; background: var(--mor); border-radius: 8px 8px 4px 4px; position: absolute; bottom: 0; border: 2px solid #000; }
+        .char-head { width: 22px; height: 22px; background: #ffdbac; border-radius: 50%; border: 2px solid #000; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+        .name-tag { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 900; white-space: nowrap; background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px; }
+
+        #roles-list { overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .role-card { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
+        .info-bubble { width: 26px; height: 26px; background: var(--mavi); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 900; }
 
         /* OYUN */
-        #oyun-ekrani { background: radial-gradient(circle, #14532d, #064e3b); }
-        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; filter: drop-shadow(0 0 30px orange); animation: pulse 0.5s infinite alternate; }
-        @keyframes pulse { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; } }
-        .gece-modu { background: radial-gradient(circle, #1e1b4b, #020617) !important; }
+        #oyun-ekrani { background: #14532d; }
+        .gece-modu { background: #0c1445 !important; }
+        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; filter: drop-shadow(0 0 30px orange); }
         
-        #top-ui { position: fixed; top: 0; left: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
-        .timer-box { font-family: 'Cinzel'; font-size: 28px; font-weight: 900; text-shadow: 3px 3px 0 #000; pointer-events: auto; }
-        .role-box { background: var(--altin); color: #000; padding: 10px 20px; border-radius: 12px; font-weight: 900; font-family: 'Cinzel'; border: 3px solid #000; pointer-events: auto; }
+        #top-ui { position: fixed; top: 20px; left: 0; width: 100%; display: flex; justify-content: space-around; align-items: center; z-index: 100; pointer-events: none; }
+        .ui-box { background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 15px; border: 2px solid var(--altin); font-family: 'Cinzel'; pointer-events: auto; }
     </style>
 </head>
 <body>
 
     <div id="screen-login" class="ekran" style="display: flex;">
-        <h1 style="font-family: 'Cinzel'; font-size: 70px; color: var(--altin); margin: 0; text-shadow: 5px 5px 0 var(--mor);">ÜLGÜN</h1>
-        <div class="glass" style="width: 350px; text-align: center; margin-top: 20px;">
-            <input type="text" id="input-nick" placeholder="İSMİNİZİ YAZIN" maxlength="12" style="width: 100%; background: transparent; border: none; border-bottom: 3px solid var(--altin); color: #fff; font-size: 20px; text-align: center; outline: none; margin-bottom: 25px;">
-            <button class="btn btn-primary" style="width: 100%" onclick="initPeer(true)">LOBİ OLUŞTUR</button>
-            <button class="btn btn-secondary" style="width: 100%" onclick="initPeer(false)">KABİLEYE KATIL</button>
+        <h1 style="font-family: 'Cinzel'; font-size: 60px; color: var(--altin); margin-bottom: 20px;">ÜLGÜN</h1>
+        <div class="glass" style="width: 320px;">
+            <input type="text" id="input-nick" placeholder="KABİLE ADINIZ" maxlength="12" style="width: 100%; background: transparent; border: none; border-bottom: 3px solid var(--altin); color: #fff; font-size: 22px; text-align: center; outline: none; margin-bottom: 25px;">
+            <button class="btn btn-primary" onclick="startSystem(true)">LOBİ KUR</button>
+            <button class="btn btn-secondary" onclick="startSystem(false)">KODA KATIL</button>
+            <p id="login-status" style="font-size: 12px; color: var(--yesil); margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="screen-lobby" class="ekran">
         <div id="lobi-grid">
-            <div id="player-canvas" onclick="handleLobbyMove(event)">
-                <div style="position: absolute; bottom: 10px; left: 10px; color: rgba(255,255,255,0.3); font-weight: bold;">HAREKET ETMEK İÇİN DOKUN</div>
-            </div>
+            <div id="player-canvas" onclick="sendLobbyMove(event)"></div>
             <div class="glass" id="roles-list">
-                <h3 style="font-family: 'Cinzel'; color: var(--altin); margin-top: 0;">📜 KABİLE ROLLERİ</h3>
-                </div>
+                <h3 style="font-family: 'Cinzel'; color: var(--altin); margin: 0 0 15px 0;">📜 ROLLER</h3>
+            </div>
         </div>
-        <div style="margin-top: 20px; display: flex; align-items: center; gap: 30px;">
-            <div id="display-code" style="font-family: 'Cinzel'; font-size: 24px; color: var(--mavi); cursor: pointer;" onclick="copyLobbyCode()">KOD: --- (KOPYALA)</div>
-            <div id="player-count" style="font-weight: 900; font-size: 20px;">1/12 Oyuncu</div>
-            <button id="start-btn" class="btn btn-primary" onclick="requestStart()" style="display: none;">OYUNU BAŞLAT</button>
+        <div style="margin-top: 25px; text-align: center;">
+            <div id="display-code" style="font-family: 'Cinzel'; font-size: 28px; color: var(--altin); cursor: pointer; margin-bottom: 10px;" onclick="copyCode()">BAĞLANIYOR...</div>
+            <button id="start-btn" class="btn btn-primary" onclick="hostStartGame()" style="display: none; width: 250px;">OYUNU BAŞLAT</button>
         </div>
     </div>
 
     <div id="screen-game" class="ekran">
         <div id="top-ui">
-            <div id="game-timer" class="timer-box">☀️ GÜNDÜZ: 60s</div>
-            <div id="game-role" class="role-box">ROL: ...</div>
+            <div id="timer" class="ui-box">☀️ GÜNDÜZ: 60s</div>
+            <div id="my-role" class="ui-box" style="background: var(--altin); color: #000;">ROLÜN: YÜKLENİYOR</div>
         </div>
         <div id="ates">🔥</div>
-        <div id="game-oba" style="width: 100%; height: 100%; position: relative;"></div>
+        <div id="oba" style="width: 100%; height: 100%;"></div>
     </div>
 
     <script>
         const ROLLER = [
-            {n:"Şifacı", d:"Gece bir oyuncuyu ölümden kurtarabilir."}, {n:"Katil", d:"Kabilenin düşmanı. Her gece birini yok eder."},
-            {n:"Bekçi", d:"Bir oyuncuyu korumaya alır, katil onu vuramaz."}, {n:"Gözcü", d:"Gece kimin kime gittiğini gizlice izler."},
-            {n:"Bilge", d:"Bir oyuncunun gerçek rolünü her gece sorgulayabilir."}, {n:"Meczup", d:"Asılarak ölürse tek başına kazanır."},
-            {n:"Avcı", d:"Öldürüldüğünde yanında birini daha götürür."}, {n:"İzci", d:"Geceleri kabiledeki ayak izlerini takip eder."},
-            {n:"Dirençli", d:"İlk saldırıdan sağ kurtulur."}, {n:"İspiyoncu", d:"Fısıldaşmaları rüzgardan duyar."},
-            {n:"Gölge", d:"Sorgulamalarda rolü farklı görünür."}, {n:"Kötü Polis", d:"Her gece birini sorguya çeker."},
-            {n:"Kaos", d:"Her gece rastgele başka bir rolün gücünü kullanır."}, {n:"Gardiyan", d:"Birini hücreye atarak o geceki gücünü engeller."}
+            {n:"Şifacı", d:"Gece birini kurtarır."}, {n:"Katil", d:"Gece birini öldürür."},
+            {n:"Bekçi", d:"Birini korur."}, {n:"Gözcü", d:"Kimin kime gittiğini görür."},
+            {n:"Bilge", d:"Rol sorgular."}, {n:"Meczup", d:"Asılınca kazanır."},
+            {n:"Avcı", d:"Ölünce vurur."}, {n:"İzci", d:"İz sürer."},
+            {n:"Dirençli", d:"1 canı fazladır."}, {n:"İspiyoncu", d:"Sesleri duyar."},
+            {n:"Gölge", d:"Gizemlidir."}, {n:"Kötü Polis", d:"Sorgu yapar."},
+            {n:"Kaos", d:"Güç hırsızı."}, {n:"Gardiyan", d:"Hapse atar."}
         ];
 
-        let peer, connections = [], players = [], myId, myNick;
-        let isHost = false;
+        let peer, connections = [], players = [], myId, myNick, isHost = false;
 
-        // --- ONLINE ÇEKİRDEK ---
-        function initPeer(asHost) {
-            myNick = document.querySelector('#input-nick').value.toUpperCase();
-            if(!myNick) return alert("Kabile adınızı girin!");
+        function startSystem(asHost) {
+            myNick = document.getElementById('input-nick').value.trim().toUpperCase();
+            if(!myNick) return alert("İsim gerekli!");
             isHost = asHost;
-            
-            const randomID = isHost ? Math.random().toString(36).substring(2, 7).toUpperCase() : null;
-            peer = new Peer(randomID);
+            document.getElementById('login-status').innerText = "Sunucuya bağlanılıyor...";
+
+            // PeerJS Sunucusuna Bağlanma
+            peer = new Peer(isHost ? Math.random().toString(36).substring(2, 7).toUpperCase() : undefined);
 
             peer.on('open', id => {
                 myId = id;
                 if(isHost) {
-                    document.querySelector('#display-code').innerText = "KOD: " + id + " (KOPYALA)";
-                    document.querySelector
+                    document.getElementById('display-code').innerText = "KOD: " + id;
+                    document.getElementById('start-btn').style.display = "block";
+                    players.push({id: id, name: myNick, x: 100, y: 100});
+                    updateLobbyUI();
+                } else {
+                    let joinCode = prompt("Lobi Kodunu Gir:");
+                    if(!joinCode) return location.reload();
+                    const conn = peer.connect(joinCode.toUpperCase());
+                    handleConnection(conn);
+                }
+                showScreen('screen-lobby');
+                loadRoles();
+            });
+
+            peer.on('connection', handleConnection);
+            peer.on('error', err => {
+                console.error(err);
+                alert("Bağlantı Hatası! Sayfayı yenileyip tekrar deneyin.");
+                location.reload();
+            });
+        }
+
+        function handleConnection(conn) {
+            conn.on('open', () => {
+                connections.push(conn);
+                if(!isHost) conn.send({type: 'JOIN', name: myNick});
+
+                conn.on('data', data => {
+                    if(data.type === 'JOIN' && isHost) {
+                        players.push({id: conn.peer, name: data.name, x: 120, y: 120});
+                        broadcast({type: 'SYNC', players: players});
+                        updateLobbyUI();
+                    }
+                    if(data.type === 'SYNC') {
+                        players = data.players;
+                        updateLobbyUI();
+                    }
+                    if(data.type === 'MOVE') {
+                        let p = players.find(x => x.id === data.id);
+                        if(p) { p.x = data.x; p.y = data.y; updateLobbyUI(); }
+                    }
+                    if(data.type === 'START') {
+                        finalizeStart(data.roles, data.count);
+                    }
+                });
+            });
+        }
+
+        function sendLobbyMove(e) {
+            const rect = document.getElementById('player-canvas').getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left - 20;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top - 25;
+            
+            let me = players.find(p => p.id === myId);
+            if(me) { me.x = x; me.y = y; updateLobbyUI(); }
+            
+            const msg = {type: 'MOVE', id: myId, x: x, y: y};
+            if(isHost) broadcast(msg); else if(connections[0]) connections[0].send(msg);
+        }
+
+        function updateLobbyUI() {
+            const canvas = document.getElementById('player-canvas');
+            canvas.innerHTML = "";
+            players.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'char';
+                div.style.left = p.x + 'px';
+                div.style.top = p.y + 'px';
+                div.innerHTML = `<div class="name-tag">${p.name}</div><div class="char-head"></div><div class="char-cape"></div>`;
+                canvas.appendChild(div);
+            });
+        }
+
+        function hostStartGame() {
+            const shuffled = ROLLER.map(r => r.n).sort(() => Math.random() - 0.5);
+            const count = players.length;
+            const data = {type: 'START', roles: shuffled, count: count};
+            broadcast(data);
+            finalizeStart(shuffled, count);
+        }
+
+        function finalizeStart(roles, count) {
+            showScreen('screen-game');
+            const myIdx = players.findIndex(p => p.id === myId);
+            document.getElementById('my-role').innerText = "ROLÜN: " + roles[myIdx];
+            
+            const oba = document.getElementById('oba');
+            const cx = window.innerWidth/2, cy = window.innerHeight/2;
+            const r = Math.min(cx, cy) * 0.7;
+
+            for(let i=0; i < (count < 4 ? 4 : count); i++) {
+                const angle = (i * 2 * Math.PI) / (count < 4 ? 4 : count);
+                const x = cx + r * Math.cos(angle) - 40;
+                const y = cy * 0.9 + r * Math.sin(angle) - 40;
+                const name = players[i] ? players[i].name : "Yabancı " + (i+1);
+                
+                const cadir = document.createElement('div');
+                cadir.style.cssText = `position:absolute; left:${x}px; top:${y}px; text-align:center;`;
+                cadir.innerHTML = `<div style="font-size:50px">⛺</div><div style="font-weight:900;">${name}</div>`;
+                oba.appendChild(cadir);
+            }
+            gameTimer();
+        }
+
+        function gameTimer() {
+            let s = 60, m = "GÜNDÜZ";
+            setInterval(() => {
+                s--;
+                if(s <= 0) {
+                    m = m === "GÜNDÜZ" ? "GECE" : "GÜNDÜZ";
+                    s = m === "GÜNDÜZ" ? 60 : 30;
+                    document.getElementById('screen-game').classList.toggle('gece-modu');
+                }
+                document.getElementById('timer').innerText = `${m === "GÜNDÜZ" ? "☀️" : "🌙"} ${m}: ${s}s`;
+            }, 1000);
+        }
+
+        function loadRoles() {
+            const list = document.getElementById('roles-list');
+            ROLLER.forEach(r => {
+                list.innerHTML += `<div class="role-card"><span>${r.n}</span><div class="info-bubble" onclick="alert('${r.d}')">?</div></div>`;
+            });
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.ekran').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function broadcast(msg) { connections.forEach(c => c.send(msg)); }
+        function copyCode() {
+            const t = document.getElementById('display-code').innerText.split(' ')[1];
+            navigator.clipboard.writeText(t);
+            alert("KOPYALANDI!");
+        }
+    </script>
+</body>
+</html>
