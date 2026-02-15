@@ -3,102 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ÜLGÜN: KABİLE v3.0</title>
+    <title>ÜLGÜN: KABİLE v4.0 - Master Edition</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root { --mor: #a855f7; --kirmizi: #ef4444; --mavi: #3b82f6; --yesil: #22c55e; --altin: #fbbf24; --arkaplan: #020617; }
         * { box-sizing: border-box; touch-action: manipulation; user-select: none; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--arkaplan); color: white; overflow: hidden; }
 
+        /* GÖRSEL EFEKTLER */
         .ekran { display: none; height: 100vh; width: 100vw; position: absolute; }
         #ana-menu { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: radial-gradient(circle, #1e1b4b, #020617); }
-        .menu-box { width: 90%; max-width: 400px; padding: 25px; border: 4px solid; text-align: center; border-radius: 20px; font-weight: 900; font-size: 22px; cursor: pointer; transition: 0.3s; }
-        .box-isim { border-color: var(--mor); cursor: default; }
-        input { background: transparent; border: none; border-bottom: 3px solid var(--mor); color: white; text-align: center; font-size: 22px; width: 100%; outline: none; }
-
-        /* LOBİ */
-        #lobi-ekrani { grid-template-columns: 1fr 1fr; grid-template-rows: 1.5fr 1fr 0.6fr; gap: 12px; padding: 15px; background: #0f172a; }
-        .bolge { border: 2px solid #334155; border-radius: 15px; position: relative; padding: 15px; background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(5px); }
-        #player-area { height: 100%; position: relative; background: #1e293b; border-radius: 10px; border: 2px dashed #475569; overflow: hidden; }
-        .p-body { position: absolute; width: 45px; height: 45px; background: #fff; border-radius: 50%; border: 3px solid #000; transition: 0.2s linear; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-        .p-label { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: #000; color: #fff; padding: 2px 8px; border-radius: 5px; font-size: 11px; white-space: nowrap; border: 1px solid #fff; }
-
-        /* OYUN */
-        #oyun-ekrani { background: #14532d; transition: background 2s; }
-        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 70px; z-index: 10; filter: drop-shadow(0 0 30px orange); animation: fire 0.2s infinite alternate; }
-        @keyframes fire { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.1); } }
-        .cadir { position: absolute; width: 95px; text-align: center; z-index: 5; }
-        .oyuncu-govde { width: 45px; height: 45px; background: #64748b; border-radius: 50%; margin: 0 auto; position: relative; border: 3px solid #000; transition: all 3.3s linear; }
-
-        /* GECE MODU */
-        .gece-modu { background: #080c29 !important; }
-        #ay { display: none; position: absolute; top: 40px; right: 40px; font-size: 55px; filter: drop-shadow(0 0 15px #fff); }
-        .gece-modu #ay { display: block; animation: float 4s infinite ease-in-out; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         
-        #rol-tabelasi { position: fixed; top: 20px; right: 20px; background: var(--altin); color: #000; padding: 12px 20px; border-radius: 12px; font-weight: 900; z-index: 1001; border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
-        #info-bar { position: fixed; top: 20px; width: 100%; text-align: center; font-size: 30px; font-weight: 900; color: #fff; z-index: 100; text-shadow: 3px 3px #000; }
-        #not-defteri { position: fixed; bottom: 20px; right: 20px; width: 230px; height: 220px; background: #fef3c7; color: #451a03; border-radius: 12px; padding: 12px; z-index: 1000; border: 3px solid #d97706; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); }
-        #not-text { width: 100%; height: 85%; background: transparent; border: none; resize: none; outline: none; font-size: 14px; font-weight: bold; }
+        /* KARAKTER TASARIMI (YENİ) */
+        .char-body { width: 45px; height: 55px; position: relative; transition: 0.3s; }
+        .char-cape { width: 100%; height: 80%; background: #475569; border-radius: 10px 10px 5px 5px; position: absolute; bottom: 0; border: 2px solid #000; }
+        .char-head { width: 24px; height: 24px; background: #ffdbac; border-radius: 50%; border: 2px solid #000; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 2; }
+        .char-eyes { width: 100%; position: absolute; top: 10px; display: flex; justify-content: space-around; padding: 0 4px; }
+        .eye { width: 4px; height: 4px; background: black; border-radius: 50%; }
 
-        .btn { padding: 15px 30px; border-radius: 12px; border: none; font-weight: 900; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.95); }
-        .copy-info { font-size: 10px; color: var(--mavi); display: block; }
+        /* ATEŞ VE ATMOSFER */
+        #ates { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; z-index: 10; filter: drop-shadow(0 0 40px orange); animation: fire-flicker 0.15s infinite alternate; }
+        @keyframes fire-flicker { 0% { transform: translate(-50%, -50%) scale(1) rotate(-2deg); } 100% { transform: translate(-50%, -50%) scale(1.1) rotate(2deg); opacity: 0.8; } }
+        
+        .sis { position: absolute; width: 200%; height: 200%; background: url('https://www.transparenttextures.com/patterns/fog.png'); opacity: 0; pointer-events: none; transition: 3s; z-index: 20; }
+        .gece-modu .sis { opacity: 0.15; animation: fog-move 60s infinite linear; }
+        @keyframes fog-move { from { transform: translate(-25%, -25%); } to { transform: translate(0, 0); } }
+
+        /* MODAL VE UI */
+        .ui-card { background: rgba(15, 23, 42, 0.9); border: 3px solid var(--altin); border-radius: 20px; padding: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
+        .btn { padding: 15px 30px; border-radius: 12px; border: none; font-weight: 900; font-family: 'Cinzel'; cursor: pointer; transition: 0.2s; background: var(--yesil); color: black; }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        #rol-tabelasi { position: fixed; top: 20px; right: 20px; background: linear-gradient(45deg, var(--altin), #d97706); color: #000; padding: 15px 25px; border-radius: 15px; font-weight: 900; z-index: 1001; border: 3px solid #000; font-family: 'Cinzel'; box-shadow: 6px 6px 0 #000; }
+        #info-bar { position: fixed; top: 25px; width: 100%; text-align: center; font-size: 32px; font-weight: 900; color: #fff; z-index: 100; text-shadow: 4px 4px #000; font-family: 'Cinzel'; }
+
+        /* OYUNCU CADIRLARI */
+        .cadir-container { position: absolute; width: 100px; transition: 0.5s; cursor: pointer; }
+        .cadir-icon { font-size: 60px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+        .oyuncu-label { position: absolute; bottom: -25px; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: 900; white-space: nowrap; color: white; text-shadow: 2px 2px #000; }
+
     </style>
 </head>
 <body>
 
+    <div class="sis"></div>
+
     <div id="ana-menu" class="ekran" style="display: flex;">
-        <h1 style="color:var(--altin); font-size: 60px; text-shadow: 4px 4px var(--mor);">ÜLGÜN</h1>
-        <div class="menu-box box-isim"><input type="text" id="my-name" placeholder="ADINIZ"></div>
-        <div class="menu-box" style="border-color:var(--kirmizi)" onclick="joinLobby()">KOD İLE KATIL</div>
-        <div class="menu-box" style="border-color:var(--mavi)" onclick="hostLobby()">LOBİ KUR</div>
+        <h1 style="color:var(--altin); font-size: 80px; font-family:'Cinzel'; text-shadow: 6px 6px var(--mor); margin:0;">ÜLGÜN</h1>
+        <p style="color: white; font-weight: bold; margin-bottom: 30px; opacity: 0.7;">KABİLE MECLİSİNE HOŞ GELDİN</p>
+        <div class="ui-card" style="width: 350px; text-align: center;">
+            <input type="text" id="my-name" placeholder="KABİLE ADINIZ" style="background:transparent; border:none; border-bottom:3px solid var(--mor); color:white; font-size:20px; text-align:center; width:100%; margin-bottom:20px; outline:none;">
+            <button class="btn" style="width:100%; margin-bottom:10px; background:var(--mavi); color:white;" onclick="hostLobby()">LOBİ KUR</button>
+            <button class="btn" style="width:100%; background:var(--kirmizi); color:white;" onclick="joinLobby()">KODLA KATIL</button>
+        </div>
     </div>
 
-    <div id="lobi-ekrani" class="ekran">
-        <div class="bolge" style="grid-column: span 1;" onclick="sendMove(event)">
-            <div id="player-area"></div>
+    <div id="lobi-ekrani" class="ekran" style="padding: 40px; background: #020617;">
+        <div style="display: grid; grid-template-columns: 1fr 300px; gap: 20px; height: 80%;">
+            <div id="player-area" style="border:4px solid #1e293b; border-radius: 20px; position: relative; background: #0f172a;" onclick="sendMove(event)"></div>
+            <div class="ui-card">
+                <h2 style="color:var(--altin); font-family:'Cinzel';">AYARLAR</h2>
+                <label>☀️ GÜNDÜZ: <span id="gv">60</span>s</label>
+                <input type="range" id="gs" min="15" max="180" value="60" oninput="gv.innerText=this.value" style="width:100%; margin-bottom:20px;">
+                <label>🌙 GECE: <span id="nv">30</span>s</label>
+                <input type="range" id="ns" min="15" max="120" value="30" oninput="nv.innerText=this.value" style="width:100%; margin-bottom:20px;">
+                <hr border="1" color="#334155">
+                <p id="status">Bekleniyor...</p>
+                <button class="btn" style="width:100%" onclick="startGame()">BAŞLAT</button>
+            </div>
         </div>
-        <div class="bolge" id="roles-bolge">
-            <h2 style="color:var(--yesil); margin:0;">📜 ROLLER (14)</h2>
-            <div id="roles-list" style="font-size: 12px; columns: 2; margin-top: 5px;"></div>
-        </div>
-        <div class="bolge" id="settings-bolge">
-            <h3>AYARLAR</h3>
-            ☀️ Gündüz: <span id="gv">60</span>s <input type="range" id="gs" min="10" max="120" value="60" oninput="gv.innerText=this.value" style="width:100%"><br>
-            🌙 Gece: <span id="nv">30</span>s <input type="range" id="ns" min="10" max="120" value="30" oninput="nv.innerText=this.value" style="width:100%">
-        </div>
-        <div class="bolge" style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center;">
-            <div id="my-code" onclick="copyCode()" style="cursor:pointer; font-weight:bold; color:var(--mavi)">KOD: BEKLENİYOR...<span class="copy-info">(Tıkla Kopyala)</span></div>
-            <div id="status" style="font-weight:bold; color:var(--altin);">Bağlanıyor...</div>
-            <button class="btn" onclick="startGame()" style="background:var(--yesil); color: black;">MECLİSİ BAŞLAT</button>
-        </div>
+        <div id="my-code" onclick="copyCode()" style="margin-top:20px; font-family:'Cinzel'; color:var(--mavi); cursor:pointer; text-align:center; font-size:24px;">KOD: ---</div>
     </div>
 
     <div id="oyun-ekrani" class="ekran">
         <div id="ay">🌙</div>
-        <div id="rol-tabelasi">ROLÜN: Şifacı</div>
+        <div id="rol-tabelasi">ROL: YÜKLENİYOR...</div>
         <div id="info-bar">☀️ GÜNDÜZ</div>
         <div id="ates">🔥</div>
         <div id="oba"></div>
-        <div id="not-defteri"><b>📔 KABİLE GÜNLÜĞÜ</b><textarea id="not-text"></textarea></div>
     </div>
 
     <script>
-        let peer; let conn; let myNick = ""; let connections = [];
-        let players = []; let tur = 1; let isHost = false;
-        const allRoles = ["Şifacı", "Katil", "Bekçi", "Gözcü", "Bilge", "Meczup", "Avcı", "İzci", "Dirençli", "İspiyoncu", "Gölge", "Kötü Polis", "Kaos", "Gardiyan"];
+        let peer; let connections = []; let players = []; let isHost = false; let tur = 1;
+        const ROLLER = ["Şifacı", "Katil", "Bekçi", "Gözcü", "Bilge", "Meczup", "Avcı", "İzci", "Dirençli", "İspiyoncu", "Gölge", "Kötü Polis", "Kaos", "Gardiyan"];
 
         function hostLobby() {
-            myNick = document.getElementById('my-name').value;
-            if(!myNick) return alert("İsim yaz!");
+            const nick = document.getElementById('my-name').value;
+            if(!nick) return alert("Adını yaz!");
             isHost = true;
-            peer = new Peer(Math.random().toString(36).substring(2, 8).toUpperCase());
+            peer = new Peer(Math.random().toString(36).substring(2, 7).toUpperCase());
             peer.on('open', id => {
-                document.getElementById('my-code').innerHTML = `KOD: ${id} <span class="copy-info">(Tıkla Kopyala)</span>`;
-                players.push({id: id, name: myNick, x: 50, y: 50});
+                document.getElementById('my-code').innerText = "KOD: " + id;
+                players.push({id, name: nick, x: 50, y: 50});
                 updateLobby();
-                document.getElementById('status').innerText = "Lobi Kuruldu";
             });
             peer.on('connection', c => {
                 c.on('open', () => {
@@ -106,64 +104,56 @@
                     c.on('data', data => handleData(data, c));
                 });
             });
-            initLobbyUI();
+            showScreen('lobi-ekrani');
         }
 
         function joinLobby() {
-            myNick = document.getElementById('my-name').value;
-            const code = prompt("Lobi Kodunu Girin:");
-            if(!code || !myNick) return;
+            const nick = document.getElementById('my-name').value;
+            const code = prompt("Lobi Kodu:");
+            if(!nick || !code) return;
             peer = new Peer();
             peer.on('open', () => {
-                conn = peer.connect(code);
-                conn.on('open', () => {
-                    conn.send({type: 'join', name: myNick});
-                    initLobbyUI();
-                    document.getElementById('my-code').innerText = "KOD: " + code;
+                const c = peer.connect(code.toUpperCase());
+                c.on('open', () => {
+                    connections.push(c);
+                    c.send({type: 'join', name: nick});
+                    showScreen('lobi-ekrani');
                 });
-                conn.on('data', data => handleData(data));
+                c.on('data', handleData);
             });
         }
 
         function handleData(data, c) {
             if(data.type === 'join' && isHost) {
                 players.push({id: c.peer, name: data.name, x: 50, y: 50});
-                broadcast({type: 'sync', players: players});
+                broadcast({type: 'sync', players});
             }
             if(data.type === 'sync') { players = data.players; updateLobby(); }
             if(data.type === 'move') { updateRemotePos(data.id, data.x, data.y); }
-            if(data.type === 'start') { setupGame(data.roles, data.gS, data.nS); }
-        }
-
-        function initLobbyUI() {
-            document.getElementById('ana-menu').style.display = 'none';
-            document.getElementById('lobi-ekrani').style.display = 'grid';
-            const list = document.getElementById('roles-list');
-            allRoles.forEach(r => list.innerHTML += `• ${r}<br>`);
-        }
-
-        function copyCode() {
-            const code = document.getElementById('my-code').innerText.split(' ')[1];
-            navigator.clipboard.writeText(code).then(() => alert("Kod Kopyalandı!"));
-        }
-
-        function sendMove(e) {
-            const rect = document.getElementById('player-area').getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left - 22;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top - 22;
-            const myP = document.getElementById(`p-${peer.id}`);
-            if(myP) { myP.style.left = x + "px"; myP.style.top = y + "px"; }
-            if(isHost) broadcast({type: 'move', id: peer.id, x, y});
-            else if(conn) conn.send({type: 'move', id: peer.id, x, y});
+            if(data.type === 'start') { runGame(data.roles, data.gS, data.nS); }
         }
 
         function updateLobby() {
             const area = document.getElementById('player-area');
             area.innerHTML = "";
             players.forEach(p => {
-                area.innerHTML += `<div id="p-${p.id}" class="p-body" style="left:${p.x}px; top:${p.y}px"><span class="p-label">${p.name}</span></div>`;
+                area.innerHTML += `
+                    <div id="p-${p.id}" class="char-body" style="position:absolute; left:${p.x}px; top:${p.y}px">
+                        <div class="char-head"><div class="char-eyes"><div class="eye"></div><div class="eye"></div></div></div>
+                        <div class="char-cape"></div>
+                        <div class="oyuncu-label">${p.name}</div>
+                    </div>`;
             });
-            document.getElementById('status').innerText = players.length + " Oyuncu";
+            document.getElementById('status').innerText = players.length + " Kişi Hazır";
+        }
+
+        function sendMove(e) {
+            const rect = document.getElementById('player-area').getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left - 22;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top - 22;
+            updateRemotePos(peer.id, x, y);
+            const msg = {type: 'move', id: peer.id, x, y};
+            if(isHost) broadcast(msg); else connections[0].send(msg);
         }
 
         function updateRemotePos(id, x, y) {
@@ -171,79 +161,76 @@
             if(p) { p.style.left = x + "px"; p.style.top = y + "px"; }
         }
 
-        function broadcast(data) {
-            connections.forEach(c => c.send(data));
+        function broadcast(data) { connections.forEach(c => c.send(data)); }
+        function showScreen(id) { 
+            document.querySelectorAll('.ekran').forEach(e => e.style.display = 'none');
+            document.getElementById(id).style.display = (id === 'lobi-ekrani' ? 'block' : 'flex');
         }
 
-        // --- OYUN MANTIĞI ---
         function startGame() {
-            if(!isHost) return alert("Sadece lobi kurucusu başlatabilir!");
-            // Rolleri karıştır ve dağıt
-            let shuffledRoles = [...allRoles].sort(() => Math.random() - 0.5);
+            if(!isHost) return;
+            const roles = [...ROLLER].sort(() => Math.random() - 0.5);
             const gS = document.getElementById('gs').value;
             const nS = document.getElementById('ns').value;
-            const startData = {type: 'start', roles: shuffledRoles, gS, nS};
-            broadcast(startData);
-            setupGame(shuffledRoles, gS, nS);
+            broadcast({type: 'start', roles, gS, nS});
+            runGame(roles, gS, nS);
         }
 
-        function setupGame(roles, gS, nS) {
+        function runGame(roles, gS, nS) {
+            showScreen('oyun-ekrani');
             const myIndex = players.findIndex(p => p.id === peer.id);
-            document.getElementById('rol-tabelasi').innerText = "ROLÜN: " + roles[myIndex];
-            document.getElementById('lobi-ekrani').style.display = 'none';
-            document.getElementById('oyun-ekrani').style.display = 'block';
-
-            const oba = document.getElementById('oba');
-            const mX = window.innerWidth / 2; const mY = window.innerHeight / 2;
-            const radius = Math.min(window.innerWidth, window.innerHeight) * 0.35;
+            document.getElementById('rol-tabelasi').innerText = "ROL: " + roles[myIndex];
             
-            // Toplam 12 kişi (oyuncular + botlar)
+            const oba = document.getElementById('oba');
+            const center = {x: window.innerWidth/2, y: window.innerHeight/2};
+            const r = Math.min(window.innerWidth, window.innerHeight) * 0.35;
+
             oba.innerHTML = "";
             for(let i=0; i<12; i++) {
-                const aci = (i * 2 * Math.PI) / 12;
-                const x = mX + radius * Math.cos(aci) - 45;
-                const y = mY + radius * Math.sin(aci) - 45;
-                const pName = players[i] ? players[i].name : "Kabile Üyesi " + (i+1);
-                
+                const angle = (i * 2 * Math.PI) / 12;
+                const x = center.x + r * Math.cos(angle) - 50;
+                const y = center.y + r * Math.sin(angle) - 50;
+                const name = players[i] ? players[i].name : "Yabancı " + (i+1);
+                const color = players[i] ? "var(--mor)" : "#475569";
+
                 oba.innerHTML += `
-                    <div class="cadir" style="left:${x}px; top:${y}px" onclick="action(${i})">
-                        <div style="font-size:50px">⛺</div>
-                        <div class="oyuncu-govde" id="oba-p-${i}">
-                            <div style="position:absolute; bottom:-25px; left:50%; transform:translateX(-50%); font-size:12px; font-weight:bold; white-space:nowrap;">${pName}</div>
+                    <div class="cadir-container" style="left:${x}px; top:${y}px" onclick="interact(${i})">
+                        <div class="cadir-icon">⛺</div>
+                        <div class="char-body" id="oba-p-${i}" style="margin: -20px auto 0; transform: scale(0.8);">
+                            <div class="char-head"><div class="char-eyes"><div class="eye"></div><div class="eye"></div></div></div>
+                            <div class="char-cape" style="background:${color}"></div>
+                            <div class="oyuncu-label">${name}</div>
                         </div>
                     </div>`;
             }
-            runGameLoop(parseInt(gS), parseInt(nS));
+            startTimer(parseInt(gS), parseInt(nS));
         }
 
-        function action(id) {
+        function interact(id) {
             if(!document.getElementById('oyun-ekrani').classList.contains('gece-modu')) return;
             const p = document.getElementById('oba-p-0');
-            const target = document.querySelectorAll('.cadir')[id].getBoundingClientRect();
-            const current = p.getBoundingClientRect();
-            p.style.position = "fixed";
-            p.style.left = current.left + "px"; p.style.top = current.top + "px";
-            setTimeout(() => {
-                p.style.left = (target.left + 25) + "px"; p.style.top = (target.top + 25) + "px";
-            }, 50);
-            document.getElementById('not-text').value += `${tur}. Gece: ${id+1}. eve işlem yapıldı.\n`;
-            setTimeout(() => { p.style.position = "relative"; p.style.left = "0"; p.style.top = "0"; }, 3350);
+            p.style.transition = "3.3s linear";
+            p.style.transform = "scale(1.2) translateY(-20px)";
+            setTimeout(() => p.style.transform = "scale(0.8) translateY(0)", 3500);
         }
 
-        function runGameLoop(gS, nS) {
-            let sn = gS;
-            let mod = "GÜNDÜZ";
+        function startTimer(gs, ns) {
+            let s = gs; let mode = "GÜNDÜZ";
             setInterval(() => {
-                sn--;
-                if(sn <= 0) {
-                    if(mod === "GECE") tur++;
-                    mod = (mod === "GÜNDÜZ") ? "GECE" : "GÜNDÜZ";
-                    sn = (mod === "GÜNDÜZ") ? gS : nS;
+                s--;
+                if(s <= 0) {
+                    mode = (mode === "GÜNDÜZ" ? "GECE" : "GÜNDÜZ");
+                    s = (mode === "GÜNDÜZ" ? gs : ns);
                     document.getElementById('oyun-ekrani').classList.toggle('gece-modu');
                 }
-                const ikon = (mod === "GÜNDÜZ" ? "☀️ " : "🌙 ");
-                document.getElementById('info-bar').innerText = ikon + mod + ": " + sn + "s";
+                document.getElementById('info-bar').innerText = (mode === "GÜNDÜZ" ? "☀️ " : "🌙 ") + mode + ": " + s + "s";
             }, 1000);
+        }
+
+        function copyCode() {
+            const c = document.getElementById('my-code').innerText.split(' ')[1];
+            navigator.clipboard.writeText(c);
+            alert("Kod kopyalandı!");
         }
     </script>
 </body>
